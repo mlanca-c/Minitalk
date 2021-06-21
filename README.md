@@ -5,4 +5,3 @@
  [![Stars](https://img.shields.io/github/stars/mlanca-c/Minitalk?color=ffff00&label=Stars&logo=Stars&style=?style=flat)](https://github.com/mlanca-c/Minitalk)
  [![Size](https://img.shields.io/github/repo-size/mlanca-c/Minitalk?color=blue&label=Size&logo=Size&style=?style=flat)](https://github.com/mlanca-c/Minitalk)
  [![Activity](https://img.shields.io/github/last-commit/mlanca-c/Minitalk?color=red&label=Last%20Commit&style=flat)](https://github.com/mlanca-c/Minitalk)
- 
