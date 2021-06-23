@@ -16,3 +16,8 @@
 
 # Intro
  > [subject](subject.pdf)
+
+# Useful Links
+
+ * [Text Generator](http://www.dummytextgenerator.com/#jump)
+ * [Wiki](https://github.com/mlanca-c/Minitalk/wiki)
