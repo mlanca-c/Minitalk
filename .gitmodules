@@ -1,0 +1,3 @@
+[submodule "ft_printf"]
+	path = ft_printf
+	url = git@github.com:mlanca-c/ft_printf.git
