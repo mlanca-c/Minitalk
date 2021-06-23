@@ -20,5 +20,4 @@
 # Useful Links
 
  * [Wiki](https://github.com/mlanca-c/Minitalk/wiki)
- * [Chat application between two processes using signals and shared memory](https://www.geeksforgeeks.org/chat-application-between-two-processes-using-signals-and-shared-memory/)
- * [Communication between two process using signals in C](https://www.geeksforgeeks.org/signals-c-set-2/)
+ * [Text Generator](http://www.dummytextgenerator.com/#jump)
