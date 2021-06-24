@@ -13,6 +13,9 @@
  cd Minitalk
  make all
  ```
+ 
+ # Compiling
+ <MISSING GIF>
 
 # Intro
  > [subject](subject.pdf)
