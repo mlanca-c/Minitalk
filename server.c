@@ -5,54 +5,79 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mlanca-c <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/06/22 12:41:13 by mlanca-c          #+#    #+#             */
-/*   Updated: 2021/06/25 15:58:30 by mlanca-c         ###   ########.fr       */
+/*   Created: 2021/06/28 15:34:06 by mlanca-c          #+#    #+#             */
+/*   Updated: 2021/06/28 19:47:57 by mlanca-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
-t_message	g_message;
-
-/*
-*/
-void	handler_sigusr2(int signum)
+void	add_character(int pid, char c)
 {
-	(void)signum;
-	g_message.str[0] |= 0x80 >> g_message.bit;
-	g_message.bit++;
-	ft_printf("0");
+	static char	*message;
+	char		*temporary;
+	int			i;
+	int			size;
+
+	if (!message)
+	{
+		message = (char *)malloc(sizeof(char) * 2);
+		message[0] = c;
+		message[1] = '\0';
+	}
+	if (!c)
+	{
+		ft_putstr_fd(message, 1);
+		free(message);
+		kill(pid, SIGUSR1);
+	}
+	temporary = message;
+	size = ft_strlen(message);
+	message = (char *)malloc(sizeof(char) * (size + 2));
+	i = -1;
+	while (temporary[++i])
+		message[i] = temporary[i];
+	message[size + 1] = '\0';
+	message[size] = c;
+	if (temporary)
+		free(temporary);
+	printf("add: %s\n", message);
 }
 
-/*
-*/
-void	handler_sigusr1(int signum)
+void	handler_sigusr(int signum, siginfo_t *info, void *context)
 {
-	(void)signum;
-	g_message.str[0] ^= 0x80 >> g_message.bit;
-	g_message.bit++;
-	ft_printf("1");
+	char		c;
+	static int	bits = 0;
+
+	(void)context;
+	printf("bits: %d\n", bits);
+	if (bits % 8 == 0)
+		c = 0xFF;
+	if (signum == SIGUSR1)
+		c ^= 0x80 >> bits % 8;
+	else if (signum == SIGUSR2)
+		c |= 0x80 >> bits % 8;
+	if (kill(info->si_pid, SIGUSR1) == -1)
+	{
+		kill(info->si_pid, SIGUSR2);
+		exit(1);
+	}
+	bits++;
+	if (bits % 8 == 0)
+		add_character((int)info->si_pid, c);
 }
 
-/*
-*/
 int	main(void)
 {
-	pid_t		pid;
+	struct sigaction	sa_signal;
 
-	pid = getpid();
-	ft_printf("PID: %d\n", pid);
-	g_message.bit = 0;
-	g_message.str[SIZE] = '\0';
-	ft_memset(g_message.str, 0xFF, SIZE);
-	signal(SIGUSR1, handler_sigusr1);
-	signal(SIGUSR2, handler_sigusr2);
-	// inside while: if done print message
+	ft_putstr_fd("PID: ", 1);
+	ft_putnbr_fd(getpid(), 1);
+	ft_putstr_fd("\n", 1);
+	install_handler(&sa_signal);
+	sa_signal.sa_sigaction = handler_sigusr;
+	sigaction(SIGUSR1, &sa_signal, NULL);
+	sigaction(SIGUSR2, &sa_signal, NULL);
 	while (1)
-		if (g_message.bit == 8)
-		{
-			ft_printf("-> %s\n", g_message.str);
-			g_message.bit = 0;
-			ft_memset(g_message.str, 0xFF, SIZE);
-		}
+		;
 }

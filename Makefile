@@ -5,27 +5,30 @@
 #                                                     +:+ +:+         +:+      #
 #    By: mlanca-c <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2021/06/22 12:44:59 by mlanca-c          #+#    #+#              #
-#    Updated: 2021/06/23 13:03:03 by mlanca-c         ###   ########.fr        #
+#    Created: 2021/06/28 10:50:29 by mlanca-c          #+#    #+#              #
+#    Updated: 2021/06/28 18:32:27 by mlanca-c         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-	# Minitalk (Mandatory Part) Variables #
+	# Library Name #
 CLIENT	=	client
 SERVER	=	server
-SRC_C	=	client.c
-SRC_S	=	server.c
+NAME	=
+	# libft Variables #
+LIBFT		=	./libft/libft.a
+LIBFT_DIR	=	./libft
 
-	# Includes flag for compilation #
-INC		= -I. -Ift_printf/ -Ift_printf/libft/ -Ift_printf/libft/stack
 
-	# library #
-LIBFT	=	ft_printf/libftprintf.a
+	# Mandatory Variables #
+SRC_C	=	client.c utils.c
+SRC_S	=	server.c utils.c
+INC		=	-I. -I$(LIBFT_DIR) -I$(LIBFT_DIR)/stack \
+			-I$(LIBFT_DIR)/get_next_line
 
 	# Compiling Variables #
-CC		=	gcc
-CFLAG	=	-Wall -Wextra -Werror
-RM		=	rm -f
+CC			=	gcc
+CFLAG		=	-Wall -Wextra -Werror
+RM			=	rm -f
 
 	# Colors #
 GREEN		=	\e[38;5;118m
@@ -50,27 +53,37 @@ bonus:		$(BONUS)
 m : mandatory
 b : bonus
 
-
-$(CLIENT):
-	@ $(MAKE) re -C ./ft_printf
+all:
+	@ $(MAKE) DEBUG=$(DEBUG) -C ./libft
 	@ $(CC) $(D_FLAG) $(CFLAG) $(SRC_C) $(LIBFT) $(INC) -o $(CLIENT)
-	@printf "$(_SUCCESS) client created.\n"
+	@ $(CC) $(D_FLAG) $(CFLAG) $(SRC_S) $(LIBFT) $(INC) -o $(SERVER)
+	@printf "$(_SUCCESS) client ready.\n"
+	@printf "$(_SUCCESS) server ready.\n"
 
 $(SERVER):
-	@ $(MAKE) re -C ./ft_printf
+	@ $(MAKE) DEBUG=$(DEBUG) -C ./libft
 	@ $(CC) $(D_FLAG) $(CFLAG) $(SRC_S) $(LIBFT) $(INC) -o $(SERVER)
-	@printf "$(_SUCCESS) server created.\n"
+	@printf "$(_SUCCESS) server ready.\n"
 
-all: $(CLIENT) $(SERVER)
+$(CLIENT):
+	@ $(MAKE) DEBUG=$(DEBUG) -C ./libft
+	@ $(CC) $(D_FLAG) $(CFLAG) $(SRC_C) $(LIBFT) $(INC) -o $(CLIENT)
+	@printf "$(_SUCCESS) client ready.\n"
+
+$(NAME): all
 
 clean:
-	@ $(MAKE) clean -C ./ft_printf
+	@ $(MAKE) clean -C $(LIBFT_DIR)
 	@ $(RM) $(CLIENT) $(SERVER)
-	@printf "$(_INFO) client and server removed.\n"
+	@printf "$(_INFO) client removed.\n"
+	@printf "$(_INFO) server removed.\n"
 
-fclean: clean
-	@ $(MAKE) fclean -C ./ft_printf
+fclean:
+	@ $(MAKE) fclean -C $(LIBFT_DIR)
+	@ $(RM) $(CLIENT) $(SERVER)
+	@printf "$(_INFO) client removed.\n"
+	@printf "$(_INFO) server removed.\n"
 
 re: fclean all
 
-PHONY: all clean fclean re mandatory bonus m b
+.PHONY: all clean fclean re

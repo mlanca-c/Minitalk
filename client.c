@@ -5,53 +5,106 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mlanca-c <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/06/22 12:41:56 by mlanca-c          #+#    #+#             */
-/*   Updated: 2021/06/25 12:42:38 by mlanca-c         ###   ########.fr       */
+/*   Created: 2021/06/28 11:34:11 by mlanca-c          #+#    #+#             */
+/*   Updated: 2021/06/28 19:47:58 by mlanca-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
-void	send_signals(char *message, int pid)
-{
-	int	i;
-	int	shift;
+char	*g_message;
 
-	shift = -1;
-	i = 0;
-	while (message[i])
+/*
+ * This function sends character, once called, of g_message to server. Everytime
+ * send_character() function is called the next character of g_message is sent
+ * via signals - SIGUSR1 and SIGUSR2 - to the process with the PID 'pid'.
+ *
+ * @param	pid	- Process ID of server (process where client sends the signals
+ * 										to).
+*/
+int	send_character(int pid)
+{
+	static int	i = 0;
+	int			shift;
+
+	shift = 0;
+	if (g_message[i - 1] || g_message[i])
 	{
-		while (++shift < 8)
+		printf("send_character: %c\n", g_message[i]);
+		while (shift < 8)
 		{
-			if (message[i] & (0x80 >> shift))
+			if (g_message[i] & 0x80 >> shift)
 			{
-				ft_printf("0");
-				kill(pid, SIGUSR2);
+				if (kill(pid, SIGUSR2) == -1)
+					exit(EXIT_FAILURE);
 			}
 			else
-			{
-				ft_printf("1");
-				kill(pid, SIGUSR1);
-			}
-			usleep(3);
+				if (kill(pid, SIGUSR1) == -1)
+					exit(EXIT_FAILURE);
+			shift++;
 		}
+		shift = 0;
 		i++;
 	}
+	if (!g_message[i])
+	{
+		free(g_message);
+		return (1);
+	}
+	return (0);
 }
 
 /*
 */
-int	main(int argc, char *argv[])
+void	handler_sigusr(int signum, siginfo_t *info, void *context)
 {
-	int		pid;
-
-	if (argc != 3 && !ft_str_isnumeric(argv[1]))
+	(void)context;
+	if (signum == SIGUSR1)
 	{
-		ft_printf("client: invalid arguments\n");
-		ft_printf("\tcorrect format [./%s SERVER_PID MESSAGE\n]", argv[0]);
+		if (send_character(info->si_pid))
+			pause();
+	}
+	else
+	{
+		ft_putstr_fd("An error occured: server did not receive message.\n", 1);
+		exit(1);
+	}
+}
+
+/*
+** This is the main function of client.
+** In here the program checks if the parameters sent in the compilation are 
+** correct - only two parameters can be sent, the PID address of server and the
+** string to be sent.
+** The program then calls the send_character() function - sends the first 8
+** signals of the program. And then it waits for a signal - SIGUSR1 or SIGUSR2
+** from server.
+** If client receives SIGUSR1 - then the next character of the string is sent to
+** server. If the client recieves SIGUSR2 - then a error occurd or all the
+** characters of the string were already sent.
+**
+** @param	int		argc	- argument counter.
+**
+** @param	char	**argv	- ./client <SERVER_PID> <STR> - parameters.
+*/
+int	main(int argc, char **argv)
+{
+	struct sigaction	sa_signal;
+
+	if (argc != 3 || !ft_str_isnumeric(argv[1]))
+	{
+		ft_putstr_fd("client: invalid arguments.\n", 1);
+		ft_putstr_fd("\tcorrect format: ./client <server_pid> <message>\n", 1);
 		exit(EXIT_FAILURE);
 	}
-	pid = ft_atoi(argv[1]);
-	send_signals(argv[2], pid);
+	g_message = ft_strdup(argv[2]);
+	printf("g_message: %s\n", g_message);
+	send_character(ft_atoi(argv[1]));
+	install_handler(&sa_signal);
+	sa_signal.sa_sigaction = handler_sigusr;
+	sigaction(SIGUSR1, &sa_signal, NULL);
+	sigaction(SIGUSR2, &sa_signal, NULL);
+	while (1)
+		;
 	return (0);
 }
