@@ -6,7 +6,7 @@
 #    By: mlanca-c <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/06/28 10:50:29 by mlanca-c          #+#    #+#              #
-#    Updated: 2021/06/28 18:32:27 by mlanca-c         ###   ########.fr        #
+#    Updated: 2021/06/29 15:48:54 by mlanca-c         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -48,7 +48,7 @@ ifeq ($(SANITIZE), 1)
 endif
 
 mandatory:	$(CLIENT) $(SERVER)
-bonus:		$(BONUS)
+bonus:		mandatory
 
 m : mandatory
 b : bonus
