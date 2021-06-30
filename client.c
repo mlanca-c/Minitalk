@@ -6,7 +6,7 @@
 /*   By: mlanca-c <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/28 11:34:11 by mlanca-c          #+#    #+#             */
-/*   Updated: 2021/06/30 12:59:38 by mlanca-c         ###   ########.fr       */
+/*   Updated: 2021/06/30 16:17:01 by mlanca-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,16 @@
 ** (void       (*sa_sigaction)(int, siginfo_t *, void *)).
 */
 char	*g_message;
+
+void	error_message(void)
+{
+	ft_putstr_fd(ANSI_COLOR_RED, 1);
+	ft_putstr_fd("client: invalid arguments.\n", 1);
+	ft_putstr_fd(ANSI_COLOR_YELLOW, 1);
+	ft_putstr_fd("correct format: [./client <PID> <STR>].\n", 1);
+	ft_putstr_fd(ANSI_COLOR_RESET, 1);
+	exit(EXIT_FAILURE);
+}
 
 /*
 */
@@ -101,7 +111,9 @@ void	handler_sigusr(int signum, siginfo_t *info, void *context)
 		send_bit(info->si_pid);
 	else if (signum == SIGUSR2)
 	{
+		ft_putstr_fd(ANSI_COLOR_GREEN, 1);
 		ft_putstr_fd("server: operation successful.\n", 1);
+		ft_putstr_fd(ANSI_COLOR_RESET, 1);
 		exit(EXIT_SUCCESS);
 	}
 }
@@ -140,12 +152,8 @@ int	main(int argc, char **argv)
 	struct sigaction	sa_signal;
 	sigset_t			block_mask;
 
-	if (argc != 3)
-	{
-		ft_putstr_fd("client: invalid arguments.\n", 1);
-		ft_putstr_fd("correct format: [./client <PID> <STR>].\n", 1);
-		exit(EXIT_FAILURE);
-	}
+	if (argc != 3 || !ft_str_isnumeric(argv[1]))
+		error_message();
 	g_message = ft_strdup(argv[2]);
 	if (!g_message)
 		exit(EXIT_FAILURE);

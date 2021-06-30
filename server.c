@@ -6,7 +6,7 @@
 /*   By: mlanca-c <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/28 15:34:06 by mlanca-c          #+#    #+#             */
-/*   Updated: 2021/06/30 13:02:54 by mlanca-c         ###   ########.fr       */
+/*   Updated: 2021/06/30 16:13:38 by mlanca-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,66 +17,41 @@
 */
 void	get_pid(void)
 {
+	ft_putstr_fd(ANSI_COLOR_GREEN, 1);
 	ft_putstr_fd("PID: ", 1);
 	ft_putnbr_fd(getpid(), 1);
 	ft_putstr_fd("\n", 1);
+	ft_putstr_fd(ANSI_COLOR_RESET, 1);
 }
 
 /*
 */
 void	handle_string(int pid, char c, int status)
 {
-	static char *message = 0;
-	char		*temporary;
-	int			i;
+	static char	*message = 0;
 
-	if (status)
-	{
-		ft_putstr_fd(message, 1);
-		message = 0;
-		free(message);
-		if (kill(pid, SIGUSR2) == -1)
-			exit(EXIT_FAILURE);
-		return ;
-	}
-	if (!message)
-	{
-		message = (char *)malloc(sizeof(char) * 2);
-		message[0] = c;
-		message[1] = '\0';
-		if (kill(pid, SIGUSR1) == -1)
-		{
-			free(message);
-			exit(EXIT_FAILURE);
-		}
-		return ;
-	}
-	temporary = message;
-	message = (char *)malloc(sizeof(char) * (ft_strlen(message) + 2));
-	i = -1;
-	if (temporary)
-	{
-		while (temporary[++i])
-			message[i] = temporary[i];
-		free(temporary);
-	}
-	message[i++] = c;
-	message[i] = '\0';
-	kill(pid, SIGUSR1);
+	if (status == PRINT)
+		message = print_string(pid, message);
+	else if (status == STORE && !message)
+		message = init_string(pid, message, c);
+	else if (status == STORE)
+		message = store_string(pid, message, c);
+	else if (status == KILL)
+		message = kill_string(pid, message);
 }
 
 /*
- * This function is called when the program receives either SIGUSR1 or SIGUSR2.
- * It has two static variables:
- * 		int bit	- is the number of signals - representing bits - that the
- * 		program has received.
- * 		char c	- is the character created by the 8 signals server receives.
- * Every 8 bits the program receives a character c is formed. Once it's formed
- * handle_string() function is called with the status 'STORE', and that
- * character is added to 'message'- string client sends server. If the character
- * is null (if the program receives 8 SIGUSR1 signals - 0 - on a row), then
- * handle_string() function is called with the status 'PRINT', and the program
- * knows that the string was fully sent by client.
+** This function is called when the program receives either SIGUSR1 or SIGUSR2.
+** It has two static variables:
+** 		int bit	- is the number of signals - representing bits - that the
+** 		program has received.
+** 		char c	- is the character created by the 8 signals server receives.
+** Every 8 bits the program receives a character c is formed. Once it's formed
+** handle_string() function is called with the status 'STORE', and that
+** character is added to 'message'- string client sends server. If the character
+** is null (if the program receives 8 SIGUSR1 signals - 0 - on a row), then
+** handle_string() function is called with the status 'PRINT', and the program
+** knows that the string was fully sent by client.
 */
 void	handler_sigusr(int signum, siginfo_t *info, void *context)
 {
@@ -98,7 +73,7 @@ void	handler_sigusr(int signum, siginfo_t *info, void *context)
 		c = 0xFF;
 	}
 	else
-		kill(info->si_pid, SIGUSR1);
+		handle_string(info->si_pid, 0, KILL);
 }
 
 /*
@@ -110,7 +85,7 @@ void	handler_sigusr(int signum, siginfo_t *info, void *context)
 int	main(void)
 {
 	struct sigaction	sa_signal;
-	sigset_t 			block_mask;
+	sigset_t			block_mask;
 
 	get_pid();
 	sigemptyset(&block_mask);
