@@ -6,7 +6,7 @@
 #    By: mlanca-c <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/06/28 10:50:29 by mlanca-c          #+#    #+#              #
-#    Updated: 2021/06/30 15:39:49 by mlanca-c         ###   ########.fr        #
+#    Updated: 2021/06/30 16:22:26 by mlanca-c         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -47,12 +47,6 @@ ifeq ($(SANITIZE), 1)
 	D_FLAG	=	-fsanitize=leak -g
 endif
 
-mandatory:	$(CLIENT) $(SERVER)
-bonus:		mandatory
-
-m : mandatory
-b : bonus
-
 all:
 	@ $(MAKE) DEBUG=$(DEBUG) -C ./libft
 	@ $(CC) $(D_FLAG) $(CFLAG) $(SRC_C) $(LIBFT) $(INC) -o $(CLIENT)
@@ -85,5 +79,11 @@ fclean:
 	@printf "$(_INFO) server removed.\n"
 
 re: fclean all
+
+mandatory:	$(CLIENT) $(SERVER)
+bonus:		mandatory
+
+m : mandatory
+b : bonus
 
 .PHONY: all clean fclean re
