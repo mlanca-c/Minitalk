@@ -17,8 +17,9 @@
  # Compiling
  
  ```
- $ ./server 
- 
+ $ ./server
+ PID: <PID_SERVER>
+ (wait)
  ```
 
  ```
