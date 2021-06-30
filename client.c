@@ -6,7 +6,7 @@
 /*   By: mlanca-c <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/28 11:34:11 by mlanca-c          #+#    #+#             */
-/*   Updated: 2021/06/30 16:44:31 by mlanca-c         ###   ########.fr       */
+/*   Updated: 2021/06/30 18:17:16 by mlanca-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,7 +122,7 @@ void	handler_sigusr(int signum, siginfo_t *info, void *context)
 	else if (signum == SIGUSR2)
 	{
 		ft_putstr_fd(ANSI_COLOR_GREEN, 1);
-		ft_putstr_fd("server: operation successful.\n", 1);
+		ft_putstr_fd("client: operation successful.\n", 1);
 		ft_putstr_fd(ANSI_COLOR_RESET, 1);
 		exit(EXIT_SUCCESS);
 	}

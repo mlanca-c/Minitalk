@@ -6,7 +6,7 @@
 /*   By: mlanca-c <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/30 15:27:03 by mlanca-c          #+#    #+#             */
-/*   Updated: 2021/06/30 17:04:42 by mlanca-c         ###   ########.fr       */
+/*   Updated: 2021/06/30 18:17:50 by mlanca-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,6 @@
 */
 char	*init_string(int pid, char *message, char c)
 {
-	ft_putstr_fd(ANSI_COLOR_BLUE, 1);
-	ft_putstr_fd("CLIENT\n", 1);
-	ft_putstr_fd(ANSI_COLOR_RESET, 1);
 	message = (char *)malloc(sizeof(char) * 2);
 	if (!message)
 		exit(EXIT_FAILURE);
