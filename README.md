@@ -18,13 +18,11 @@
  
  ```
  $ ./server 
- PID: 25928
- Hello World, this is Minitalk!
  
  ```
 
  ```
- $ ./client 25928 "Hello World, this is Minitalk!"
+ $ ./client <PID_SERVER> <STRING>
  ```
 
 # Intro
