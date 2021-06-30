@@ -6,7 +6,7 @@
 /*   By: mlanca-c <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/28 11:34:11 by mlanca-c          #+#    #+#             */
-/*   Updated: 2021/06/29 20:00:41 by mlanca-c         ###   ########.fr       */
+/*   Updated: 2021/06/30 12:59:38 by mlanca-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ void	error(void)
  * This function extracts a bit from a character from a string.
  * It has two static variables in order to iterate the string given as a
  * command line argument bit-by-bit.
- * The first static - 'int i' iterates the string - 'g_message' -
  * character-by-character. It starts at zero and it ends at length - 1.
  * The other static - 'int bit' iterates a character - 'g_message[i]' -
  * bit-by-bit. It starts at zero and it ends at 7 (8 bits per character from 0
@@ -49,37 +48,27 @@ void	error(void)
 */
 void	send_bit(int pid)
 {
+	static int	bits = 0;
 	static int	i = 0;
-	static int	bit = 0;
 
-	printf("send: %s\n", &g_message[i]);
-	if (g_message[i])
+	if (g_message[bits / 8] || bits == 0)
 	{
-		if (g_message[i] & (0x80 >> bit))
+		if (g_message[bits / 8] & (0x80 >> (bits % 8)))
 		{
-			printf("1");
 			if (kill(pid, SIGUSR2) == -1)
 				error();
 		}
-		else
-		{
-			printf("0");
+		else if (kill(pid, SIGUSR1) == -1)
+			error();
+		bits++;
+	}
+	else if (i || bits / 8 == (int)ft_strlen(g_message))
+	{
+		if (i++ < 8)
 			if (kill(pid, SIGUSR1) == -1)
 				error();
-		}
-		if (++bit == 8)
-		{
-			printf("\n");
-			bit = 0;
-			i++;
-		}
-	}
-	else
-	{
-		free(g_message);
-		while (++bit < 8)
-			if (kill(pid, SIGUSR1) == -1)
-				exit(EXIT_FAILURE);
+		if (i == 8)
+			free(g_message);
 	}
 }
 
@@ -149,7 +138,7 @@ void	handler_sigusr(int signum, siginfo_t *info, void *context)
 int	main(int argc, char **argv)
 {
 	struct sigaction	sa_signal;
-	sigset_t 			block_mask;
+	sigset_t			block_mask;
 
 	if (argc != 3)
 	{

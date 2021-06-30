@@ -6,7 +6,7 @@
 #    By: mlanca-c <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/06/28 10:50:29 by mlanca-c          #+#    #+#              #
-#    Updated: 2021/06/29 15:48:54 by mlanca-c         ###   ########.fr        #
+#    Updated: 2021/06/30 12:08:03 by mlanca-c         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,8 +20,8 @@ LIBFT_DIR	=	./libft
 
 
 	# Mandatory Variables #
-SRC_C	=	client.c utils.c
-SRC_S	=	server.c utils.c
+SRC_C	=	client.c
+SRC_S	=	server.c
 INC		=	-I. -I$(LIBFT_DIR) -I$(LIBFT_DIR)/stack \
 			-I$(LIBFT_DIR)/get_next_line
 
@@ -44,7 +44,7 @@ endif
 
 	# Fsanitize #
 ifeq ($(SANITIZE), 1)
-	D_FLAG	=	-fsanitize=address -g
+	D_FLAG	=	-fsanitize=leak -g
 endif
 
 mandatory:	$(CLIENT) $(SERVER)
