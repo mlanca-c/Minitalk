@@ -15,7 +15,17 @@
  ```
  
  # Compiling
- <MISSING GIF>
+ 
+ ```
+ $ ./server 
+ PID: 25928
+ Hello World, this is Minitalk!
+ 
+ ```
+
+ ```
+ $ ./client 25928 "Hello World, this is Minitalk!"
+ ```
 
 # Intro
  > [subject](subject.pdf)
