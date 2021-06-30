@@ -6,7 +6,7 @@
 /*   By: mlanca-c <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/28 15:34:06 by mlanca-c          #+#    #+#             */
-/*   Updated: 2021/06/30 16:13:38 by mlanca-c         ###   ########.fr       */
+/*   Updated: 2021/06/30 17:05:01 by mlanca-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,18 @@ void	get_pid(void)
 }
 
 /*
+** This function is where we can access the static char *message, which is the
+** string the program is receiving. The behaviour of handle_string() changes
+** with status.
+** if status is PRINT	- it means that 'message' is complete and there are no
+** 						more signals to receive from client. print_string()
+** 						function is called to print the string received from
+** 						client.
+** if status is STORE	- it means that server received another 8 bits from
+** 						client. This means 'c' needs to be added to 'message'.
+** 						The function that does this is init_string() function
+** 						if 'message' is empty or store_string() function if not.
+** if status is KILL	- it means that program wants to send SIGUSR1 to server.
 */
 void	handle_string(int pid, char c, int status)
 {
