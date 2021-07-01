@@ -5,101 +5,67 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mlanca-c <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/06/28 15:34:06 by mlanca-c          #+#    #+#             */
-/*   Updated: 2021/06/30 17:05:01 by mlanca-c         ###   ########.fr       */
+/*   Created: 2021/07/01 15:45:36 by mlanca-c          #+#    #+#             */
+/*   Updated: 2021/07/01 17:55:57 by mlanca-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
-/*
-** This function prints the PID of server using getpid() function.
-*/
-void	get_pid(void)
+void	error(int pid, char *str)
 {
-	ft_putstr_fd(ANSI_COLOR_GREEN, 1);
-	ft_putstr_fd("PID: ", 1);
+	if (str)
+		free(str);
+	ft_putstr_color_fd(ANSI_COLOR_RED,
+		"server: unexpected error.\n", 1);
+	kill(pid, SIGUSR2);
+	exit(EXIT_FAILURE);
+}
+
+void	get_pid()
+{
+	ft_putstr_color_fd(ANSI_COLOR_GREEN,
+		"PID: ", 1);
 	ft_putnbr_fd(getpid(), 1);
 	ft_putstr_fd("\n", 1);
-	ft_putstr_fd(ANSI_COLOR_RESET, 1);
 }
 
-/*
-** This function is where we can access the static char *message, which is the
-** string the program is receiving. The behaviour of handle_string() changes
-** with status.
-** if status is PRINT	- it means that 'message' is complete and there are no
-** 						more signals to receive from client. print_string()
-** 						function is called to print the string received from
-** 						client.
-** if status is STORE	- it means that server received another 8 bits from
-** 						client. This means 'c' needs to be added to 'message'.
-** 						The function that does this is init_string() function
-** 						if 'message' is empty or store_string() function if not.
-** if status is KILL	- it means that program wants to send SIGUSR1 to server.
-*/
-void	handle_string(int pid, char c, int status)
-{
-	static char	*message = 0;
-
-	if (status == PRINT)
-		message = print_string(pid, message);
-	else if (status == STORE && !message)
-		message = init_string(pid, message, c);
-	else if (status == STORE)
-		message = store_string(pid, message, c);
-	else if (status == KILL)
-		message = kill_string(pid, message);
-}
-
-/*
-** This function is called when the program receives either SIGUSR1 or SIGUSR2.
-** It has two static variables:
-** 		int bit	- is the number of signals - representing bits - that the
-** 		program has received.
-** 		char c	- is the character created by the 8 signals server receives.
-** Every 8 bits the program receives a character c is formed. Once it's formed
-** handle_string() function is called with the status 'STORE', and that
-** character is added to 'message'- string client sends server. If the character
-** is null (if the program receives 8 SIGUSR1 signals - 0 - on a row), then
-** handle_string() function is called with the status 'PRINT', and the program
-** knows that the string was fully sent by client.
-*/
 void	handler_sigusr(int signum, siginfo_t *info, void *context)
 {
-	static int	bit = 0;
 	static char	c = 0xFF;
+	static int	bits = 0;
+	static int	pid = 0;
+	static char	*message = 0;
 
 	(void)context;
+	if (info->si_pid)
+		pid = info->si_pid;
 	if (signum == SIGUSR1)
-		c ^= 0x80 >> bit % 8;
+		c ^= 0x80 >> bits;
 	else if (signum == SIGUSR2)
-		c |= 0x80 >> bit % 8;
-	bit++;
-	if (bit % 8 == 0)
+		c |= 0x80 >> bits;
+	if (++bits == 8)
 	{
-		if (c == '\0')
-			handle_string(info->si_pid, 0, PRINT);
+		if (c)
+			message = ft_straddc(message, c);
 		else
-			handle_string(info->si_pid, c, STORE);
+		{
+			ft_putstr_fd(message, 1);
+			free(message);
+			message = 0;
+		}
+		bits = 0;
 		c = 0xFF;
 	}
-	else
-		handle_string(info->si_pid, 0, KILL);
+	if (kill(pid, SIGUSR1) == -1)
+		error(pid, message);
 }
 
-/*
-** This is the main function of client. First it outputs it's process ID - PID
-** using the get_pid() function. Then waits for a signal from client - SIGUSR1
-** representing 0 or SIGUSR2 representing 1. Once it receives a signal the
-** function handler_sigusr() is called.
-*/
 int	main(void)
 {
 	struct sigaction	sa_signal;
 	sigset_t			block_mask;
 
-	get_pid();
 	sigemptyset(&block_mask);
 	sigaddset(&block_mask, SIGINT);
 	sigaddset(&block_mask, SIGQUIT);
@@ -109,6 +75,7 @@ int	main(void)
 	sa_signal.sa_sigaction = handler_sigusr;
 	sigaction(SIGUSR1, &sa_signal, NULL);
 	sigaction(SIGUSR2, &sa_signal, NULL);
+	get_pid();
 	while (1)
-		;
+		pause();
 }

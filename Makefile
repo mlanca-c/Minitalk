@@ -6,7 +6,7 @@
 #    By: mlanca-c <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/06/28 10:50:29 by mlanca-c          #+#    #+#              #
-#    Updated: 2021/07/01 11:25:22 by mlanca-c         ###   ########.fr        #
+#    Updated: 2021/07/01 17:00:46 by mlanca-c         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,7 +21,7 @@ LIBFT_DIR	=	./libft
 
 	# Mandatory Variables #
 SRC_C	=	client.c
-SRC_S	=	server.c utils.c
+SRC_S	=	server.c
 INC		=	-I. -I$(LIBFT_DIR) -I$(LIBFT_DIR)/stack \
 			-I$(LIBFT_DIR)/get_next_line
 
