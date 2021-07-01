@@ -6,7 +6,7 @@
 #    By: mlanca-c <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/06/28 10:50:29 by mlanca-c          #+#    #+#              #
-#    Updated: 2021/07/01 11:18:19 by mlanca-c         ###   ########.fr        #
+#    Updated: 2021/07/01 11:25:22 by mlanca-c         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -83,4 +83,4 @@ bonus:		mandatory
 m : mandatory
 b : bonus
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re mandatory m bonus b
