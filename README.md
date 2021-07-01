@@ -15,7 +15,17 @@
  ```
  
  # Compiling
- <MISSING GIF>
+ 
+ ```
+ $ ./server
+ PID: <PID_SERVER>
+ 
+ (wait)
+ ```
+
+ ```
+ $ ./client <PID_SERVER> <STRING>
+ ```
 
 # Intro
  > [subject](subject.pdf)
