@@ -6,14 +6,14 @@
 #    By: mlanca-c <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/06/28 10:50:29 by mlanca-c          #+#    #+#              #
-#    Updated: 2021/06/30 16:22:26 by mlanca-c         ###   ########.fr        #
+#    Updated: 2021/07/01 11:18:19 by mlanca-c         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 	# Library Name #
+NAME	=
 CLIENT	=	client
 SERVER	=	server
-NAME	=
 	# libft Variables #
 LIBFT		=	./libft/libft.a
 LIBFT_DIR	=	./libft
@@ -47,27 +47,24 @@ ifeq ($(SANITIZE), 1)
 	D_FLAG	=	-fsanitize=leak -g
 endif
 
-all:
-	@ $(MAKE) DEBUG=$(DEBUG) -C ./libft
-	@ $(CC) $(D_FLAG) $(CFLAG) $(SRC_C) $(LIBFT) $(INC) -o $(CLIENT)
-	@ $(CC) $(D_FLAG) $(CFLAG) $(SRC_S) $(LIBFT) $(INC) -o $(SERVER)
-	@printf "$(_SUCCESS) client ready.\n"
-	@printf "$(_SUCCESS) server ready.\n"
 
-$(SERVER):
-	@ $(MAKE) DEBUG=$(DEBUG) -C ./libft
-	@ $(CC) $(D_FLAG) $(CFLAG) $(SRC_S) $(LIBFT) $(INC) -o $(SERVER)
-	@printf "$(_SUCCESS) server ready.\n"
-
-$(CLIENT):
-	@ $(MAKE) DEBUG=$(DEBUG) -C ./libft
-	@ $(CC) $(D_FLAG) $(CFLAG) $(SRC_C) $(LIBFT) $(INC) -o $(CLIENT)
-	@printf "$(_SUCCESS) client ready.\n"
+all: $(SERVER) $(CLIENT)
 
 $(NAME): all
 
+$(SERVER): $(LIBFT)
+	@ $(CC) $(D_FLAG) $(CFLAG) $(SRC_S) $(LIBFT) $(INC) -o $(SERVER)
+	@printf "$(_SUCCESS) server ready.\n"
+
+$(CLIENT): $(LIBFT)
+	@ $(CC) $(D_FLAG) $(CFLAG) $(SRC_C) $(LIBFT) $(INC) -o $(CLIENT)
+	@printf "$(_SUCCESS) client ready.\n"
+
+
+$(LIBFT):
+	@ $(MAKE) DEBUG=$(DEBUG) -C ./libft
+
 clean:
-	@ $(MAKE) clean -C $(LIBFT_DIR)
 	@ $(RM) $(CLIENT) $(SERVER)
 	@printf "$(_INFO) client removed.\n"
 	@printf "$(_INFO) server removed.\n"
