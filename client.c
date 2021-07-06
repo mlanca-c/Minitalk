@@ -6,7 +6,7 @@
 /*   By: mlanca-c <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/01 15:45:45 by mlanca-c          #+#    #+#             */
-/*   Updated: 2021/07/01 17:39:14 by mlanca-c         ###   ########.fr       */
+/*   Updated: 2021/07/06 13:05:06 by mlanca-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,19 +18,6 @@ void	error(char *str)
 		free(str);
 	ft_putstr_color_fd(ANSI_COLOR_RED,
 		"client: unexpected error.\n", 1);
-	exit(EXIT_FAILURE);
-}
-
-/*
-** This function is called when the command line arguments sent to main are
-** incorrect. It outputs a message saying just that and then exits the program.
-*/
-void	error_message(void)
-{
-	ft_putstr_color_fd(ANSI_COLOR_RED,
-		"client: invalid arguments.\n", 1);
-	ft_putstr_color_fd(ANSI_COLOR_YELLOW,
-		"correct format: [./client <PID> <STR>].\n", 1);
 	exit(EXIT_FAILURE);
 }
 
@@ -103,7 +90,13 @@ void	handler_sigusr(int signum)
 int	main(int argc, char **argv)
 {
 	if (argc != 3 || !ft_str_isnumeric(argv[1]))
-		error_message();
+	{
+		ft_putstr_color_fd(ANSI_COLOR_RED,
+			"client: invalid arguments.\n", 1);
+		ft_putstr_color_fd(ANSI_COLOR_YELLOW,
+			"correct format: [./client <PID> <STR>].\n", 1);
+		exit(EXIT_FAILURE);
+	}
 	signal(SIGUSR1, handler_sigusr);
 	signal(SIGUSR2, handler_sigusr);
 	send_bit(ft_atoi(argv[1]), argv[2]);

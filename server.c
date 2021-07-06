@@ -6,7 +6,7 @@
 /*   By: mlanca-c <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/07/01 15:45:36 by mlanca-c          #+#    #+#             */
-/*   Updated: 2021/07/01 17:55:57 by mlanca-c         ###   ########.fr       */
+/*   Updated: 2021/07/06 13:08:09 by mlanca-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,11 @@ void	error(int pid, char *str)
 	exit(EXIT_FAILURE);
 }
 
-void	get_pid()
+char	*print_string(char *message)
 {
-	ft_putstr_color_fd(ANSI_COLOR_GREEN,
-		"PID: ", 1);
-	ft_putnbr_fd(getpid(), 1);
-	ft_putstr_fd("\n", 1);
+	ft_putstr_fd(message, 1);
+	free(message);
+	return (NULL);
 }
 
 void	handler_sigusr(int signum, siginfo_t *info, void *context)
@@ -49,11 +48,7 @@ void	handler_sigusr(int signum, siginfo_t *info, void *context)
 		if (c)
 			message = ft_straddc(message, c);
 		else
-		{
-			ft_putstr_fd(message, 1);
-			free(message);
-			message = 0;
-		}
+			message = print_string(message);
 		bits = 0;
 		c = 0xFF;
 	}
@@ -75,7 +70,10 @@ int	main(void)
 	sa_signal.sa_sigaction = handler_sigusr;
 	sigaction(SIGUSR1, &sa_signal, NULL);
 	sigaction(SIGUSR2, &sa_signal, NULL);
-	get_pid();
+	ft_putstr_color_fd(ANSI_COLOR_GREEN,
+		"PID: ", 1);
+	ft_putnbr_fd(getpid(), 1);
+	ft_putstr_fd("\n", 1);
 	while (1)
 		pause();
 }
