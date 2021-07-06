@@ -6,7 +6,7 @@
 /*   By: mlanca-c <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/28 11:35:11 by mlanca-c          #+#    #+#             */
-/*   Updated: 2021/07/01 15:46:31 by mlanca-c         ###   ########.fr       */
+/*   Updated: 2021/07/06 13:10:56 by mlanca-c         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,10 @@
 
 # include <signal.h>
 # include "libft.h"
-#include <stdio.h>
 
+/*
+** Colors
+*/
 # define ANSI_COLOR_RED		"\x1b[31m"
 # define ANSI_COLOR_BLUE	"\x1b[34m"
 # define ANSI_COLOR_GREEN	"\x1b[32m"
